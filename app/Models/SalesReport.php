@@ -45,6 +45,11 @@ class SalesReport extends Model
         return $query->where([['validSale', '!=', 'No'], ['status', '!=', 'Cancelled']]);
     }
 
+    public function scopeInvalidStatus($query)
+    {
+        return $query->where([['validSale', 'No'], ['status', '!=', 'Cancelled']]);
+    }
+
     public function scopeSales($query, $id)
     {
         return $query->where('agentid', $id);
@@ -53,5 +58,20 @@ class SalesReport extends Model
     public function scopePaginateSales($query)
     {
         return $query->orderBy('id', 'DESC')->paginate(5);
+    }
+
+    public function scopeTotalSales($query)
+    {
+        return $query->selectRaw('SUM(tcprice) as totalSales')->groupBy('agentid')->get();
+    }
+
+    public function scopeValidSales($query)
+    {
+        return $query->selectRaw('SUM(tcprice) as totalSales')->where('validSale', 'Yes')->where('validSale', '!=','Cancelled')->groupBy('agentid')->get();
+    }
+
+    public function scopeInvalidSales($query)
+    {
+        return $query->selectRaw('SUM(tcprice) as totalSales')->where('validSale', 'No')->where('validSale', '!=','Cancelled')->groupBy('agentid')->get();
     }
 }

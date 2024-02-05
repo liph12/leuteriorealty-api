@@ -21,4 +21,10 @@ class SalesReportController extends APIController
         $sales = $this->salesService->getSales($request);
         return new SalesResourceCollection($sales);
     }
+
+    public function totalSales(Request $request)
+    {
+        $sales = $this->salesService->getTotalSales($request);
+        return $sales;
+    }
 }
