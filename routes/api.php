@@ -3,11 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SalesReportController;
-<<<<<<< HEAD
-use App\Http\Controllers\API\AddressController;
-=======
 use App\Http\Controllers\API\AppSupportController;
->>>>>>> a2eabc9e36781eb7def9fcd7b89f9b67e567539f
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +40,6 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
    Route::get('/sales/{id}', [SalesReportController::class, 'personalSales']);
 
-<<<<<<< HEAD
-});
-=======
    Route::get('/referral-link/{id}', [UserController::class, 'referralLink']);
 
    Route::get('/total-sales/{id}', [SalesReportController::class, 'summarySales']);
@@ -57,4 +50,3 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
    Route::post('/app-support', [AppSupportController::class, 'create_support_ticket']);
 }); 
->>>>>>> a2eabc9e36781eb7def9fcd7b89f9b67e567539f
