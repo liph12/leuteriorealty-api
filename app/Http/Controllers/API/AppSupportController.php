@@ -10,6 +10,12 @@ use Illuminate\Http\Response;
 
 class AppSupportController extends Controller
 {
+    public function get_support_tickets(Request $request)
+    {
+        $tickets = AppSupport::where("memberid","=", $request->id)->get();
+        return $tickets;
+    }
+
     public function create_support_ticket(Request $request)
     {
         try {

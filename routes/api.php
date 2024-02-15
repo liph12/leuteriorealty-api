@@ -26,7 +26,13 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
    Route::get('/sales/{id}', [SalesReportController::class, 'personalSales']);
 
-   Route::get('/my-total-sales/{id}', [SalesReportController::class, 'totalSales']);
+   Route::get('/referral-link/{id}', [UserController::class, 'referralLink']);
+
+   Route::get('/total-sales/{id}', [SalesReportController::class, 'summarySales']);
+
+   Route::get('/yearly-sales/{id}', [SalesReportController::class, 'yearlySales']);
+
+   Route::get('/support-tickets/{id}', [AppSupportController::class, 'get_support_tickets']);
 
    Route::post('/app-support', [AppSupportController::class, 'create_support_ticket']);
 }); 
