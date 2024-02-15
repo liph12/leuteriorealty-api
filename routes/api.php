@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SalesReportController;
 use App\Http\Controllers\API\AppSupportController;
+use App\Http\Controllers\API\AddressController;
 
 /*
 |--------------------------------------------------------------------------
