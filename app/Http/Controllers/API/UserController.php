@@ -16,13 +16,12 @@ class UserController extends APIController
     {
         $this->userService = $userService;
     }
-    
+
     public function authRequestLogin(Request $request)
     {
         $authenticated = $this->userService->authUser($request->email, $request->password);
 
-        if($authenticated)
-        {
+        if ($authenticated) {
             $user = $authenticated['user'];
             $authToken = $authenticated['authToken'];
             $authUserData = [new UserResource($user), 'authToken' => $authToken];
@@ -39,15 +38,26 @@ class UserController extends APIController
 
         return $this->successResponse();
     }
-    
+
     public function authResponse(Request $request)
     {
         return response()->json([
-            'status'=>200,
-            'message'=>'User authenticated.',
+            'status' => 200,
+            'message' => 'User authenticated.',
             'email' => $request->user()->email,
             'user_data' => $request->user()
-        ],200);
+        ], 200);
+    }
+
+    public function referralLink(Request $request)
+    {
+        // Encrypt the user's ID
+        $userToken = \Illuminate\Support\Facades\Crypt::encryptString($request->id);
+
+        // Generate the referral link with the encrypted user token
+        $referralLink = 'https://leuteriorealty.com/registration?ref=' . $userToken;
+        
+        return $referralLink;
     }
 
     public function requestStoreUser(Request $request)
