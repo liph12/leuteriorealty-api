@@ -14,6 +14,7 @@ class Member extends Model
     const REGISTERED = 4;
 
     protected $fillable = [
+        'inviterid',
         'prc',
         'hlurb',
         'fblink',

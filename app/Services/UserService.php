@@ -86,7 +86,7 @@ class UserService
          $user_data['verification'] = $code;
          $user_data['role_id'] = 4;
 
-         Mail::to($request->email)->send(new Verification($request->email, $code, "Salesperson"));
+         // Mail::to($request->email)->send(new Verification($request->email, $code, "Salesperson"));
 
          if($isExists)
          {
