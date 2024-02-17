@@ -59,4 +59,70 @@ class UserController extends APIController
         
         return $referralLink;
     }
+
+    public function requestStoreUser(Request $request)
+    {
+        $user = $this->userService->storeUser($request);
+
+        if($user){
+            return $this->successResponse(new UserResource($user));
+        }
+
+        return $this->failResponse(Response::HTTP_FORBIDDEN, 'Something went wrong.');
+    }
+
+    public function getReferrer($token)
+    {
+        $user = $this->userService->getTokenRefDetails($token);
+
+        return new UserResource($user);
+    }
+
+    public function submitVerificationRequest(Request $request)
+    {
+        $isUserVerified = $this->userService->validateVerification($request);
+
+        if($isUserVerified)
+        {
+            return $this->successResponse(new UserResource($isUserVerified));
+        }
+
+        return $this->failResponse(Response::HTTP_FORBIDDEN, 'Invalid verification code.');
+    }
+
+    public function saveBasicInfo(Request $request)
+    {
+        $saved = $this->userService->saveBasicInfo($request);
+
+        if($saved)
+        {
+            return $this->successResponse(new UserResource($saved));
+        }
+
+        return $this->failResponse(Response::HTTP_FORBIDDEN, 'Something went wrong.');
+    }
+
+    public function saveAdditionalInfo(Request $request)
+    {
+        $saved = $this->userService->saveAdditionalInfo($request);
+
+        if($saved)
+        {
+            return $this->successResponse(new UserResource($saved));
+        }
+
+        return $this->failResponse(Response::HTTP_FORBIDDEN, 'Something went wrong.');
+    }
+
+    public function updateAccount(Request $request)
+    {
+        $updatedAccount = $this->userService->updateAccount($request);
+
+        if($updatedAccount)
+        {
+            return $this->successResponse(new UserResource($updatedAccount));
+        }
+
+        return $this->failResponse(Response::HTTP_FORBIDDEN, 'Something went wrong.');
+    }
 }
