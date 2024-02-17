@@ -15,7 +15,7 @@ class SalesReportController extends APIController
     public function __construct(SalesService $ss)
     {
         $this->salesService = $ss;
-    }
+    } 
 
     public function personalSales(Request $request)
     {
@@ -115,5 +115,14 @@ class SalesReportController extends APIController
             'total_invalid_sales' => $totalInvalidSales,
             'total_not_valid_sales' => $totalNotValidSales,
         ]);
+    }
+
+    public function specificSale(Request $request)
+    {
+        $salesId = $request->id;
+
+        $sales = SalesReport::where('id','=',$salesId)->first();
+
+        return $sales;
     }
 }

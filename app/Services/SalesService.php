@@ -8,7 +8,15 @@ class SalesService
 {
    public function getSales($request)
    {
-      return SalesReport::sales($request->id)->validStatus()->paginateSales();
+      if($request->search == 'all')
+      {
+         return SalesReport::sales($request->id)->orderBy("id","DESC")->paginateSales();
+      }
+      else { 
+         return SalesReport::sales($request->id)->where([
+            ['clientfamilyname', 'LIKE', '%'.$request->search.'%']
+        ])->validStatus()->orderBy("id","DESC")->paginateSales();
+      }
    }
 
    public function getTotalSales($request)

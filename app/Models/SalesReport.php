@@ -30,6 +30,7 @@ class SalesReport extends Model
         'termofpayment',
         'status',
         'remarks',
+        'validSale',
         'partialclaimed',
         'file',
         'broker_com',

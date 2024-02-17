@@ -24,9 +24,11 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
    Route::get('/logout', [UserController::class, 'authRequestLogout']);
 
-   Route::get('/sales/{id}', [SalesReportController::class, 'personalSales']);
+   Route::get('/sales/{id}/{search}', [SalesReportController::class, 'personalSales']);
 
    Route::get('/referral-link/{id}', [UserController::class, 'referralLink']);
+
+   Route::get('/specific-sales/{id}', [SalesReportController::class, 'specificSale']);
 
    Route::get('/total-sales/{id}', [SalesReportController::class, 'summarySales']);
 
