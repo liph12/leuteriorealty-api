@@ -30,6 +30,7 @@ class SalesReport extends Model
         'termofpayment',
         'status',
         'remarks',
+        'validSale',
         'partialclaimed',
         'file',
         'broker_com',
@@ -55,9 +56,9 @@ class SalesReport extends Model
         return $query->where('agentid', $id);
     }
 
-    public function scopePaginateSales($query)
+    public function scopePaginateSales($query) 
     {
-        return $query->orderBy('id', 'DESC')->paginate(5);
+        return $query->orderBy('id', 'DESC')->paginate(3);
     }
 
     public function scopeTotalSales($query)

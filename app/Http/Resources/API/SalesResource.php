@@ -37,6 +37,7 @@ class SalesResource extends JsonResource
             'propertyDetails' => $this->prop_details,
             'reservationDate' => $this->reservationdate,
             'termOfPayment' => $this->termofpayment,
+            'validSale' => $this->validSale,
             'status' => $this->status,
             'remarks' => $this->remarks,
             'partialclaimed' => $this->partialclaimed,
