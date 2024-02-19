@@ -48,7 +48,7 @@ class User extends Authenticatable
 
     public function memberDetails()
     {
-        return $this->belongsTo(Member::class, 'email', 'email');
+        return $this->belongsTo(Member::class, 'email', 'email')->with(['sales_team_member.sales_team', 'sales_team_subteam_member.sales_subteam']);
     }
 
     public function findUser($email)
