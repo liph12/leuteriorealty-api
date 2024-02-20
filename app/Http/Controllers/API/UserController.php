@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use App\Services\UserService;
 use App\Http\Controllers\APIController;
 use App\Http\Resources\API\UserResource;
+use App\Models\Member;
 
 class UserController extends APIController
 {
@@ -40,13 +41,22 @@ class UserController extends APIController
     }
 
     public function authResponse(Request $request)
-    {
+    { 
         return response()->json([
             'status' => 200,
             'message' => 'User authenticated.',
             'email' => $request->user()->email,
             'user_data' => $request->user()
         ], 200);
+    }
+ 
+    public function getInviterName(Request $request)
+    {
+        $userId = $request->id;
+        $member = Member::where('id','=',$userId)->first();
+        $user = $this->userService->getUser($member->email);
+
+        return new UserResource($user);
     }
 
     public function referralLink(Request $request)
