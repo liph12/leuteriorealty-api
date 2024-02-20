@@ -59,6 +59,15 @@ class UserController extends APIController
         return new UserResource($user);
     }
 
+    public function getInviterName(Request $request)
+    {
+        $userId = $request->id;
+        $member = Member::where('id','=',$userId)->first();
+        // $user = $this->userService->getUser($member->email);
+
+        return $member;
+    }
+
     public function referralLink(Request $request)
     {
         // Encrypt the user's ID

@@ -9,6 +9,7 @@ use App\Models\Member;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Verification;
 use Illuminate\Support\Facades\Crypt;
+use App\Services\SalesTeamService;
 
 class UserService
 {
@@ -66,6 +67,7 @@ class UserService
          $checkedUser = User::where('email', $request->email);
          $member = $checkedUser->with('memberDetails')->first();
          $isExists = $checkedUser->first();
+         $memberid = date("mdysi");
 
          if($member)
          {
@@ -86,7 +88,7 @@ class UserService
          $user_data['verification'] = $code;
          $user_data['role_id'] = 4;
 
-         Mail::to($request->email)->send(new Verification($request->email, $code, "Salesperson"));
+         // Mail::to($request->email)->send(new Verification($request->email, $code, "Salesperson"));
 
          if($isExists)
          {
@@ -100,7 +102,7 @@ class UserService
          }else{
             $user = new User();
 
-            Member::create(['inviterid' => $request->uplineId, 'email' => $request->email, 'national_intern' => $request->accountType, 'registration_status' => Member::VERIFICATION_PROCESS]);
+            Member::create(['memberid' => $memberid, 'inviterid' => $request->uplineId, 'email' => $request->email, 'national_intern' => $request->accountType, 'registration_status' => Member::VERIFICATION_PROCESS, 'remarks' => 'pending']);
             $user->fill($user_data)->save();
 
             return $user;
@@ -199,12 +201,16 @@ class UserService
    {
       $user = $this->getUser($request->email);
       $member = Member::findByEmail($user->email);
+      $upline = Member::find($request->uplineId);
 
       if($user)
       {
+         $teamService = new SalesTeamService();
          $hashedPassword = Hash::make($request->password);
          $user->update(['password' => $hashedPassword]);
          $member->update(['registration_status' => Member::REGISTERED]);
+
+         $teamService->storeNewMember($upline, $member);
 
          return $user;
       }
