@@ -49,21 +49,11 @@ class UserController extends APIController
             'user_data' => $request->user()
         ], 200);
     }
- 
-    public function getInviterName(Request $request)
-    {
-        $userId = $request->id;
-        $member = Member::where('id','=',$userId)->first();
-        $user = $this->userService->getUser($member->email);
-
-        return new UserResource($user);
-    }
 
     public function getInviterName(Request $request)
     {
         $userId = $request->id;
         $member = Member::where('id','=',$userId)->first();
-        // $user = $this->userService->getUser($member->email);
 
         return $member;
     }
