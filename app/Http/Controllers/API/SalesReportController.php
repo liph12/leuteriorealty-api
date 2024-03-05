@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\APIController;
 use Illuminate\Http\Request;
 use App\Http\Resources\API\SalesResourceCollection;
+use Illuminate\Support\Facades\Storage;
 use App\Services\SalesService;
+use Illuminate\Http\Response;
 use App\Models\SalesReport;
+use Carbon\Carbon;
 
 class SalesReportController extends APIController
 {
@@ -15,7 +18,7 @@ class SalesReportController extends APIController
     public function __construct(SalesService $ss)
     {
         $this->salesService = $ss;
-    } 
+    }
 
     public function personalSales(Request $request)
     {
@@ -121,8 +124,111 @@ class SalesReportController extends APIController
     {
         $salesId = $request->id;
 
-        $sales = SalesReport::where('id','=',$salesId)->first();
+        $sales = SalesReport::where('id', '=', $salesId)->first();
 
         return $sales;
+    }
+
+    public function store_sales(Request $request)
+    {
+        try {
+            // Get the current date
+            $currentDate = Carbon::now();
+
+            // Retrieve form inputs from the request09231640439
+            $agentId = $request->input('agentid');
+            $completename = $request->input('completename');
+            $clientFirstname = $request->input('clientfirstname');
+            $clientMiddlename = $request->input('clientmiddlename');
+            $clientLastname = $request->input('clientlastname');
+            $clientname = $clientFirstname . ' ' . $clientMiddlename . ' ' . $clientLastname;
+            $clientEmail = $request->input('clientemail');
+            $clientAge = $request->input('clientage');
+            $clientAddress = $request->input('clientaddress');
+            $clientGender = $request->input('clientgender');
+            $clientMobile = $request->input('clientmobile');
+            $clientCountry = $request->input('clientcountry');
+            $unitNoBlock = $request->input('unitnoblock');
+            $developer = $request->input('developer');
+            $devid = $request->input('devid');
+            $projectName = $request->input('projectname');
+            $projid = $request->input('projid') === null ? null : $request->input('projid');
+            $projid = $request->input('projid') === '' ? null : $request->input('projid');
+            $propertyTypeId = $request->input('prop_type_id');
+            $reservationDate = $request->input('reservationdate');
+            $termOfPayment = $request->input('termofpayment');
+            $status = $request->input('status');
+            $quantity = $request->input('qty');
+            $remarks = $request->input('remarks');
+            $totalContractPrice = $request->input('tcprice');
+
+            $unitNoBlock = $unitNoBlock !== '' ? $unitNoBlock : null;
+
+            $propDetails = $request->input('prop_details') !== null ? $request->input('prop_details') : '[]';
+
+            // Save form inputs to the database
+            $salesReport = SalesReport::create([
+                'agentid' => $agentId,
+                'name' => $completename,
+                'clientfamilyname' => $clientname,
+                'clientAge' => $clientAge,
+                'clientAddress' => $clientAddress,
+                'clientGender' => $clientGender,
+                'clientEmail' => $clientEmail,
+                'clientMobile' => $clientMobile,
+                'clientCountry' => $clientCountry,
+                'developer' => $developer,
+                'devid' => $devid,
+                'projectname' => $projectName,
+                'projid' => $projid,
+                'prop_type_id' => $propertyTypeId,
+                'qty' => $quantity,
+                'tcprice' => $totalContractPrice,
+                'reservationdate' => $reservationDate,
+                'termofpayment' => $termOfPayment,
+                'status' => $status,
+                'remarks' => $remarks,
+                'unitnum' => $unitNoBlock,
+                'validSale' => '',
+                'userupdate' => $agentId,
+                'logs' => '',
+                'unconfirm' => '0',
+                'prop_details' => $propDetails,
+                'dateadded' => $currentDate->format('m/d/Y'), // Month/Day/Year format
+            ]);
+
+            // Upload image to S3 bucket
+            $file = $request->file('imageAssets');
+            $monthYear = $currentDate->englishMonth . $currentDate->year;
+            $day = $currentDate->day;
+            $time = $currentDate->format('His');
+            $filename = 'lr_app/proofoftrans/' . $monthYear . '/' . $day . '/' . $salesReport->id . '-' . $agentId . '-' . $time;
+            Storage::disk('s3')->put($filename, file_get_contents($file), 'public');
+
+            $currentDateFormatted = $currentDate->format('m/d/Y');
+
+            $updateSales = SalesReport::where('id', '=', $salesReport->id)->update([
+                'created_at' => $currentDateFormatted,
+                'files' => 'https://filipinohomes123.s3.ap-southeast-1.amazonaws.com/' . $filename,
+            ]);
+
+            if ($request->sales_source == 'brokerage') {
+                $totalContractPrice = ($totalContractPrice / 0.05);
+                $reupdateSales = SalesReport::where('id', '=', $salesReport->id)->update([
+                    'tcprice' => $totalContractPrice
+                ]);
+            } else if ($request->sales_source == 'rental') {
+                $totalContractPrice = ($totalContractPrice / 0.083);
+                $reupdateSales = SalesReport::where('id', '=', $salesReport->id)->update([
+                    'tcprice' => $totalContractPrice
+                ]);
+            }
+
+            // Return success response
+            return response()->json(['message' => 'Sales added successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            // Return an error response if an exception occurs
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

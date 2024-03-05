@@ -41,7 +41,7 @@ class UserController extends APIController
     }
 
     public function authResponse(Request $request)
-    { 
+    {
         return response()->json([
             'status' => 200,
             'message' => 'User authenticated.',
@@ -53,7 +53,15 @@ class UserController extends APIController
     public function getInviterName(Request $request)
     {
         $userId = $request->id;
-        $member = Member::where('id','=',$userId)->first();
+        $member = Member::where('id', '=', $userId)->first();
+
+        return $member;
+    }
+
+    public function getStatus(Request $request)
+    {
+        $userId = $request->id;
+        $member = Member::select('status')->where('memberid', '=', $userId)->first();
 
         return $member;
     }
@@ -65,7 +73,7 @@ class UserController extends APIController
 
         // Generate the referral link with the encrypted user token
         $referralLink = 'https://leuteriorealty.com/registration?ref=' . $userToken;
-        
+
         return $referralLink;
     }
 
@@ -73,7 +81,7 @@ class UserController extends APIController
     {
         $user = $this->userService->storeUser($request);
 
-        if($user){
+        if ($user) {
             return $this->successResponse(new UserResource($user));
         }
 
@@ -91,8 +99,7 @@ class UserController extends APIController
     {
         $isUserVerified = $this->userService->validateVerification($request);
 
-        if($isUserVerified)
-        {
+        if ($isUserVerified) {
             return $this->successResponse(new UserResource($isUserVerified));
         }
 
@@ -103,8 +110,7 @@ class UserController extends APIController
     {
         $saved = $this->userService->saveBasicInfo($request);
 
-        if($saved)
-        {
+        if ($saved) {
             return $this->successResponse(new UserResource($saved));
         }
 
@@ -115,8 +121,7 @@ class UserController extends APIController
     {
         $saved = $this->userService->saveAdditionalInfo($request);
 
-        if($saved)
-        {
+        if ($saved) {
             return $this->successResponse(new UserResource($saved));
         }
 
@@ -127,8 +132,7 @@ class UserController extends APIController
     {
         $updatedAccount = $this->userService->updateAccount($request);
 
-        if($updatedAccount)
-        {
+        if ($updatedAccount) {
             return $this->successResponse(new UserResource($updatedAccount));
         }
 

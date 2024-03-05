@@ -5,6 +5,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SalesReportController;
 use App\Http\Controllers\API\AppSupportController;
 use App\Http\Controllers\API\AddressController;
+use App\Http\Controllers\API\BannerController;
 use App\Http\Controllers\API\DeveloperController;
 use App\Http\Controllers\API\ProjectsController;
 
@@ -45,6 +46,10 @@ Route::middleware('frameguard')->group(function () {
 
       Route::get('/logout', [UserController::class, 'authRequestLogout']);
 
+      Route::get('/inviter-id/{id}', [UserController::class, 'getInviterName']);
+
+      Route::get('/get-status/{id}', [UserController::class, 'getStatus']);
+
       Route::get('/sales/{id}/{search}', [SalesReportController::class, 'personalSales']);
 
       Route::get('/referral-link/{id}', [UserController::class, 'referralLink']);
@@ -57,6 +62,8 @@ Route::middleware('frameguard')->group(function () {
 
       Route::get('/support-tickets/{id}', [AppSupportController::class, 'get_support_tickets']);
 
+      Route::get('/send-message/{id}/{message}', [AppSupportController::class, 'store_message_agent']);
+
       Route::post('/app-support', [AppSupportController::class, 'create_support_ticket']);
 
       Route::get('/get-developer-list', [DeveloperController::class, 'get_developer_list']);
@@ -65,6 +72,14 @@ Route::middleware('frameguard')->group(function () {
 
       Route::get('/get-property-type', [DeveloperController::class, 'get_categories']);
 
+      Route::get('/get-banners', [BannerController::class, 'get_banners']);
+
+      Route::get('/get-settings', [BannerController::class, 'get_settings']);
+
+      Route::get('/get-announcement-banners', [BannerController::class, 'get_image_banners']);
+
       Route::get('/get-developer-projects-list/{dev_id}', [ProjectsController::class, 'get_developer_projects_list']);
+
+      Route::post('/store-sale/{sales_source}', [SalesReportController::class, 'store_sales']);
    });
 });

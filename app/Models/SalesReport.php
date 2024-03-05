@@ -32,13 +32,16 @@ class SalesReport extends Model
         'remarks',
         'validSale',
         'partialclaimed',
-        'file',
+        'dateadded',
+        'files',
+        'logs',
         'broker_com',
         'userupdate',
         'unitnum',
         'unconfirm',
         'request_file',
         'prop_details',
+        'created_at',
     ];
 
     public function scopeValidStatus($query)
@@ -56,7 +59,7 @@ class SalesReport extends Model
         return $query->where('agentid', $id);
     }
 
-    public function scopePaginateSales($query) 
+    public function scopePaginateSales($query)
     {
         return $query->orderBy('id', 'DESC')->paginate(3);
     }
@@ -68,11 +71,11 @@ class SalesReport extends Model
 
     public function scopeValidSales($query)
     {
-        return $query->selectRaw('SUM(tcprice) as totalSales')->where('validSale', 'Yes')->where('validSale', '!=','Cancelled')->groupBy('agentid')->get();
+        return $query->selectRaw('SUM(tcprice) as totalSales')->where('validSale', 'Yes')->where('validSale', '!=', 'Cancelled')->groupBy('agentid')->get();
     }
 
     public function scopeInvalidSales($query)
     {
-        return $query->selectRaw('SUM(tcprice) as totalSales')->where('validSale', 'No')->where('validSale', '!=','Cancelled')->groupBy('agentid')->get();
+        return $query->selectRaw('SUM(tcprice) as totalSales')->where('validSale', 'No')->where('validSale', '!=', 'Cancelled')->groupBy('agentid')->get();
     }
 }

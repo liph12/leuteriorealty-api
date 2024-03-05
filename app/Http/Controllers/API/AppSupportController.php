@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AppSupport;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Response;
 
@@ -12,7 +13,7 @@ class AppSupportController extends Controller
 {
     public function get_support_tickets(Request $request)
     {
-        $tickets = AppSupport::where("memberid","=", $request->id)->get();
+        $tickets = AppSupport::where("memberid", "=", $request->id)->get();
         return $tickets;
     }
 
@@ -41,7 +42,7 @@ class AppSupportController extends Controller
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
                 'concern' => $validatedData['concern'],
-                'image' => 'https://filipinohomes123.s3.ap-southeast-1.amazonaws.com/'. $filename,
+                'image' => 'https://filipinohomes123.s3.ap-southeast-1.amazonaws.com/' . $filename,
                 'status' => 'Unresolved',
                 'responses' => '[]',
             ]);
@@ -54,5 +55,48 @@ class AppSupportController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function store_message_agent(Request $request)
+    {
+        $request->validate([
+            'ID' => 'required',
+            'message' => 'required',
+        ]);
+
+        // Get the current date and time
+        $date = now();
+
+        // Generate a random message ID of 10 characters
+        $randomMessageID = Str::random(10);
+
+        // Prepare the message data in an associative array
+        $messageData = [
+            "messageid" => $randomMessageID,
+            "role" => "AGENT",
+            "message" => $request->message,
+            "setStatusTo" => "InProgress",
+            "date" => $date,
+        ];
+
+        // Find the AppSupport data based on the ID and update status and responses
+        $thisticket = AppSupport::findOrFail($request->ID);
+
+        // Decode the existing JSON string in the 'responses' field, or initialize an empty array if it's null
+        $existingResponses = json_decode($thisticket->responses, true) ?? [];
+
+        // Append the new message data to the existing array of responses
+        $existingResponses[] = $messageData;
+
+        // Encode the combined array back to JSON format
+        $updatedResponses = json_encode($existingResponses);
+
+        // Update the AppSupport record with the new status and updated responses
+        $thisticket->update([
+            "status" => "InProgress",
+            "responses" => $updatedResponses
+        ]);
+
+        return response()->json(['message' => 'Message stored successfully'], 200);
     }
 }
